@@ -1,10 +1,10 @@
 # gamejamkelgenbayev
-........TMNT.......LET'S KICK THE SHELL
-<INTRODUCTION>
+........TMNT.......LET'S KICK THE SHELL<br>
+<INTRODUCTION><br>
 Welcome to the multi game where you have to pass all the games to win the game . This game was created by all team members Aleksey, Almira, Amina, Aizifa, Yeldos.
-Game genre : puzzle + shooter + arcade ;)
+Game genre : puzzle + shooter + arcade ;)<br>
 
-<DESCRIPTION>
+<DESCRIPTION><br>
 LET'S KICK THE SHELL -> <br>
 Mission: Escape from the sewers<br>
 Story:<br>
