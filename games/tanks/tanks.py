@@ -1,31 +1,32 @@
 import pygame
-from random import randint
 import os
-
+from random import randint
 
 def tanks():
-    def pathto(dir2open, f):
-        return os.path.join(os.getcwd(), 'games', 'tanks', 'assets', dir2open, f)
-        
-    w, h = 800, 600
-    background_image = pygame.image.load(pathto("sprites", "background1.jpg"))
-    bonus_img = pygame.image.load(pathto("sprites", "bonus_star.png"))
-    bang_img = pygame.image.load(pathto("sprites", "kunai.png"))
+    def pathto(dir2open,f):
+        return os.path.join(os.getcwd(),'games','tanks','assets',dir2open,f)
+
+    w,h = 800,600
+    background_image = pygame.image.load(pathto("sprites","background1.jpg"))
+    bonus_img = pygame.image.load(pathto("sprites","bonus_star.png"))
+    bang_img = pygame.image.load(pathto("sprites","kunai.png"))
+    endka_img = pygame.image.load(pathto("sprites","congrats.png"))  # Load the "endka.png" image
+    endka_img = pygame.transform.scale(endka_img,(w,h))
     background_image = pygame.transform.scale(background_image, (w, h))
     TILE = 32
     FPS = 60
-    start_song = pygame.mixer.music.load(pathto("audio", "level_start.mp3"))
+    start_song = pygame.mixer.music.load(pathto("sprites","level_start.mp3"))
     pygame.mixer.music.play()
     window = pygame.display.set_mode((w, h))
     clock = pygame.time.Clock()
     fontUI = pygame.font.Font(None, 30)
     DIRECTS = [[0, -1], [1, 0], [0, 1], [-1, 0]]
     imgBangs = [
-        pygame.image.load(pathto('sprites', 'bang1.png')),
-        pygame.image.load(pathto('sprites', 'bang2.png')),
-        pygame.image.load(pathto('sprites', 'bang3.png')),
+        pygame.image.load(pathto('sprites','bang1.png')),
+        pygame.image.load(pathto('sprites','bang2.png')),
+        pygame.image.load(pathto('sprites','bang3.png')),
     ]
-    imgBrick = pygame.image.load(pathto('sprites', 'drawka.jpg'))
+    imgBrick = pygame.image.load(pathto('sprites','drawka.jpg'))
 
     class UI:
         def __init__(self):
@@ -33,9 +34,25 @@ def tanks():
             self.red_kills = 0
             self.blue_kill_text = fontUI.render(str(self.blue_kills), 1, (0, 0, 255))
             self.red_kill_text = fontUI.render(str(self.red_kills), 1, (255, 0, 0))
+            self.very_cool_text = None
+            self.darken_level = 0  # Уровень затемнения экрана
 
         def update(self):
-            pass
+            if self.blue_kills >= 3 and self.very_cool_text is None:
+                self.very_cool_text = fontUI.render("Very cool", 1, (255, 255, 255))
+                # Устанавливаем уровень затемнения
+                self.darken_level = 0
+
+            # Увеличиваем уровень затемнения после появления надписи "Very cool"
+            if self.very_cool_text:
+                self.darken_level += 1
+
+        def draw_dark_screen(self):
+            # Создаем поверхность для затемнения экрана
+            dark_surface = pygame.Surface(window.get_size())
+            dark_surface.set_alpha(self.darken_level)  # Устанавливаем уровень прозрачности
+            dark_surface.fill((0, 0, 0))  # Черный цвет
+            window.blit(dark_surface, (0, 0))  # Отрисовываем поверх всего остального
 
         def draw(self):
             i = 0
@@ -48,6 +65,11 @@ def tanks():
                     i += 1
             window.blit(self.blue_kill_text, (w - 150, 10))
             window.blit(self.red_kill_text, (w - 80, 10))
+            if self.very_cool_text:
+                text_rect = self.very_cool_text.get_rect(center=(w // 2, h // 2))
+                window.blit(self.very_cool_text, text_rect)
+                window.blit(endka_img, (w // 2 - endka_img.get_width() // 2, h // 2 - endka_img.get_height() // 2))  # Display the "endka.png" image
+                self.draw_dark_screen()
 
         def update_kills(self, player_color):
             if player_color == 'blue':
@@ -65,8 +87,8 @@ def tanks():
             self.active = True
             self.respawn_time = 0
             self.color = color
-            self.shotSound = pygame.mixer.Sound(pathto('audio', "shot.wav"))
-            self.dead = pygame.mixer.Sound(pathto('audio', "dead.wav"))
+            self.shotSound = pygame.mixer.Sound(pathto('audio',"shot.wav"))
+            self.dead = pygame.mixer.Sound(pathto('audio',"dead.wav"))
             self.images = images
             self.image = self.images[direct]
             self.rect = self.image.get_rect()
@@ -143,7 +165,7 @@ def tanks():
         def update(self):
             self.px += self.dx
             self.py += self.dy
-            if self.px < 0 or self.px > w or self.py < 0 or self.py > h:
+            if self.px < 0 or self.px > w or self.py < 0 or self.py >h:
                 bullets.remove(self)
             else:
                 for obj in objects:
@@ -220,17 +242,17 @@ def tanks():
     bullets = []
 
     blue_tank_images = [
-        pygame.image.load(pathto('sprites', 'blue_tank_up.png')),
-        pygame.image.load(pathto('sprites', 'blue_tank_right.png')),
-        pygame.image.load(pathto('sprites', 'blue_tank_down.png')),
-        pygame.image.load(pathto('sprites', 'blue_tank_left.png'))
+        pygame.image.load(pathto('sprites','blue_tank_up.png')),
+        pygame.image.load(pathto('sprites','blue_tank_right.png')),
+        pygame.image.load(pathto('sprites','blue_tank_down.png')),
+        pygame.image.load(pathto('sprites','blue_tank_left.png'))
     ]
 
     red_tank_images = [
-        pygame.image.load(pathto('sprites', 'red_tank_up.png')),
-        pygame.image.load(pathto('sprites', 'red_tank_right.png')),
-        pygame.image.load(pathto('sprites', 'red_tank_down.png')),
-        pygame.image.load(pathto('sprites', 'red_tank_left.png'))
+        pygame.image.load(pathto('sprites','red_tank_up.png')),
+        pygame.image.load(pathto('sprites','red_tank_right.png')),
+        pygame.image.load(pathto('sprites','red_tank_down.png')),
+        pygame.image.load(pathto('sprites','red_tank_left.png'))
     ]
 
     Tank('blue', 100, 275, 0, (pygame.K_a, pygame.K_d, pygame.K_w, pygame.K_s, pygame.K_SPACE), blue_tank_images)
@@ -250,6 +272,7 @@ def tanks():
             if not fined:
                 break
         Block(x, y, TILE)
+
 
     while True:
         for event in pygame.event.get():
@@ -273,5 +296,3 @@ def tanks():
         ui.draw()
         pygame.display.update()
         clock.tick(FPS)
-    
-
