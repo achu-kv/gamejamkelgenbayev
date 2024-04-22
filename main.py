@@ -17,7 +17,7 @@ class Game:
         '''
         self.wins = [False, False, False]
         self.won = False
-        self.screen = pygame.display.set_mode((1920, 1080))
+        self.screen = pygame.display.set_mode((1500, 844))
         self.__loop()
 
 
@@ -35,7 +35,7 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     pos = pygame.mouse.get_pos()
                     if not self.menu:
-                        if (987 <= pos[0] <= 1480) and (506 <= pos[1] <= 739):
+                        if (767, 396) <= pos <= (1156, 578):
                             t = False
         t = True
         self.screen.fill((0, 0, 0))
@@ -54,7 +54,8 @@ class Game:
 
         self.__load_icons()
         self.__menu()
-        while True:          
+        while True:
+            pygame.display.set_caption('Selection menu')   
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
@@ -137,8 +138,9 @@ class Game:
     def __load_show_start(self):
         self.menu = 0
         img = pygame.image.load('bg/start.jpeg').convert_alpha()
+        img = pygame.transform.scale(img, (1500, 844))
         self.guide = pygame.image.load('bg/guide.png')
-        self.guide = pygame.transform.scale(self.guide, (1920, 1080))
+        self.guide = pygame.transform.scale(self.guide, (1500, 844))
         self.screen.blit(img, (0, 0))
         pygame.display.flip()
 
