@@ -3,12 +3,18 @@ import random
 import time
 import os
 
+
+
 def sewers():
+    music_file = "/Users/aizifafazylbaeva/Новая папка 4/gamejamkelgenbayev/games/sewers/for_sewer.wav"  # Путь к музыке
+    pygame.mixer.music.load(music_file)
+    pygame.mixer.music.play(-1)
     FPS=90
 
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 600
     BLOCK_HEIGHT = 50
+    WHITE = (255, 255, 255)
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     background_image = pygame.image.load(pathto('lair.webp'))
@@ -20,6 +26,8 @@ def sewers():
     class Player(pygame.sprite.Sprite):
         def __init__(self):
             super().__init__()
+            #self.image = pygame.image.load(pathto('/Users/aizifafazylbaeva/Новая папка 4/gamejamkelgenbayev/2024-04-25_00.25.50-removebg-preview.png'))
+            #self.image = pygame.transform.scale(self.image, (100, 100))
             self.image = pygame.image.load(pathto('turtle.png'))
             self.image = pygame.transform.scale(self.image, (80, 100))
             self.rect = self.image.get_rect()
@@ -57,8 +65,10 @@ def sewers():
     class Obstacle(pygame.sprite.Sprite):
         def __init__(self, length, pos):
             super().__init__()
+            #self.image = pygame.image.load(pathto('/Users/aizifafazylbaeva/Новая папка 4/gamejamkelgenbayev/games/sewers/sprites/pipeup.png'))
+            #self.image = pygame.transform.scale(self.image, (100, 200))
             self.image = pygame.image.load(pathto('shred.png'))
-            self.image = pygame.transform.scale(self.image, (120, 300))
+            self.image = pygame.transform.scale(self.image, (120, 250))
             self.rect = self.image.get_rect()
 
             if pos:  # If obstacle is at the top
@@ -92,9 +102,10 @@ def sewers():
     clock = pygame.time.Clock()
     spawn_counter = 0
     while running:
+        
         screen.blit(background_image, (0, 0))
         if q:
-            time.sleep(5)
+            time.sleep(2)
             return True
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -103,6 +114,7 @@ def sewers():
                 if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                     return False
             if game_over and event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mixer.music.unpause()
                 score = 0
                 game_over = False
                 obstacles.empty()  # Clear the obstacles
@@ -139,21 +151,12 @@ def sewers():
                 if hasattr(obstacle, 'passed'):
                     delattr(obstacle, 'passed')
     
-        # Check collision with pizza
-        #hits = pygame.sprite.spritecollide(player, pizzas, True)
-        '''if hits:
-            FPS+=10
-            time.sleep(5)
-            FPS-=10'''
-
-        '''# Create new pizza if there are no collisions with obstacles
-        if not any(pygame.sprite.spritecollide(pizza, obstacles, False) for pizza in pizzas):
-            if len(pizzas) == 0:
-              pizza = Pizza()
-              all_sprites.add(pizza)
-              pizzas.add(pizza)'''
-
+        
     
+        score_text = font.render(f"SCORE:{score}", True, WHITE)
+        score_text_rect = score_text.get_rect(center=(110, 30))
+        screen.blit(score_text, score_text_rect)
+
         if score >= 30:
             #game_over_text = font.render("CONGRATULATIONS, YOU WIN", True, WHITE)
             #game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50))
@@ -161,6 +164,7 @@ def sewers():
             win_image = pygame.transform.scale(win_image, (900, 180))
             win_image_rect = win_image.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
             screen.blit(win_image, win_image_rect)
+            pygame.mixer.music.unload()
             q = True
 
         all_sprites.draw(screen)
@@ -174,7 +178,9 @@ def sewers():
             restart = pygame.transform.scale(restart, (600, 120))
             restart_rect = restart.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 + 80 ))
             screen.blit(restart, restart_rect)
-            return False
+            pygame.mixer.music.pause()
+
+            
         
         pygame.display.flip()
         clock.tick(FPS)

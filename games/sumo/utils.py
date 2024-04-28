@@ -1,5 +1,4 @@
 from math import sqrt, pi, asin, cos, sin
-import os
 
 FPS = 60
 GENERAL_SPEED = 2000
@@ -15,7 +14,7 @@ DOJO_X = (WIDTH - DOJO_WIDTH) // 2
 DOJO_Y = (HEIGHT - DOJO_HIGHT) // 2
 
 # Set up the bots
-BOT_SIZE = 5
+BOT_SIZE = 100
 BOT_OFFSET = BOT_SIZE // 2
 BOT_LINEAR_SPEED = 200
 BOT_ANGULAR_SPEED = 1
@@ -25,14 +24,15 @@ EPSILON = int(BOT_SIZE * 0.9)
 EXPLOSION_TIME = 50
 
 # Bot colors available
-RED = "red.png"
-BLUE = "blue.png"
-#GREEN = "green.png"
-#YELLOW = "yellow.png"
-ORANGE = "ORANGEE.PNG"
-PURPLE = "PURPLEE.PNG"
-#BLACK = "black.png"
-#BROWN = "brown.png"
+RED = "games/sumo/sprites/REDI.png"
+BLUE = "games/sumo/sprites/BLUEE.png"
+GREEN = "games/sumo/sprites/green.png"
+YELLOW = "games/sumo/sprites/yellow.png"
+ORANGE = "games/sumo/sprites/orange.png"
+PURPLE = "games/sumo/sprites/purple.png"
+BLACK = "games/sumo/sprites/black.png"
+ORANGE = "games/sumo/sprites/orange.png"
+BROWN = "games/sumo/sprites/brown.png"
 
 # define the RGB values for some colors.
 RGB_WHITE = (255, 255, 255)
@@ -76,7 +76,7 @@ def calculate_impact_alligned(own_angle, point1, point2):
     return 0.1
 
 
-def collision(point1, point2):
+def collition(point1, point2):
     """Check if two points are colliding."""
     x1, y1 = point1
     x2, y2 = point2
@@ -88,7 +88,7 @@ def collision(point1, point2):
 def calculate_impact(own_angle, point1, point2):
     """Calculate impact and return factor to move the opponent backwards."""
     impact_factor = calculate_impact_alligned(own_angle, point1, point2) * BACKWARD_FACTOR
-    if collision(point1, point2):
+    if collition(point1, point2):
         return round(impact_factor, 2)
     return 0
 
@@ -115,8 +115,3 @@ def calculate_angle_from_origin(point):
     if x < 0:
         angle = 180 - angle
         return round(angle)
-
-
-def pathto(f):
-    '''open file relative to system'''
-    return os.path.join(os.getcwd(), 'games', 'sumo', 'sprites', f)

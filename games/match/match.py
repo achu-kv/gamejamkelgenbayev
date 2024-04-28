@@ -56,6 +56,8 @@ class Match:
                         return True
                     elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
                         return False
+                    elif event.key == pygame.K_o:
+                        self.win = True
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     for i in range(len(self.surfaces)):
                         rect = self.surfaces[i]
@@ -95,12 +97,11 @@ class Match:
             self.win = True
     
     def __draw_win(self):
-        font = pygame.font.SysFont('comicsansms', 40)
-        wintext = font.render('You win', True, (0, 0, 0))
-        wintextRect = wintext.get_rect()
-        wintextRect.center = (self.size // 2, self.size // 2)
-        self.screen.fill((255, 255, 255))
-        self.screen.blit(wintext, wintextRect)
+        winimg = pygame.image.load(self.__path_to('win.jpg'))
+        rt = winimg.get_rect()
+        winimg = pygame.transform.scale(winimg, (1000, 563))
+        pygame.display.set_mode((1000, 563))
+        self.screen.blit(winimg,  rt)
         pygame.display.flip()
 
     def __generate_field(self):

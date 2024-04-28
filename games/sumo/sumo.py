@@ -1,23 +1,29 @@
+from os.path import join as path_join
 from time import sleep
 import pygame
 from pygame.locals import *
 from math import cos, sin, radians
 import games.sumo.utils as su
 
-
 def sumo():
+    # Initialize Pygame
+    pygame.init()
     screen = pygame.display.set_mode((su.WIDTH, su.HEIGHT))
     pygame.display.set_caption("SUMO")
     clock = pygame.time.Clock()
-    global dt
     dt = 0
 
     # fill the screen with a color to wipe away anything from last frame
-    background = pygame.image.load(su.pathto("IMG_9495.JPG")).convert()
-    dojo = pygame.image.load(su.pathto("background_dojo.jpg")).convert_alpha()
-    explosion1 = pygame.image.load(su.pathto("explosion1.png")).convert_alpha()
-    explosion2 = pygame.image.load(su.pathto("explosion2.png")).convert_alpha()
-    explosion3 = pygame.image.load(su.pathto("explosion3.png")).convert_alpha()
+    background = pygame.image.load("games/sumo/sprites/IMG_9495.JPG").convert()
+    dojo = pygame.image.load("games/sumo/sprites/background_dojo.jpg").convert_alpha()
+    explosion1 = pygame.image.load("games/sumo/sprites/explosion1.png").convert_alpha()
+    explosion2 = pygame.image.load("games/sumo/sprites/explosion2.png").convert_alpha()
+    explosion3 = pygame.image.load("games/sumo/sprites/explosion3.png").convert_alpha()
+    win = pygame.image.load("games/sumo/sprites/win.png").convert_alpha()
+
+    pygame.mixer.init()
+    boowakabanga_sound = pygame.mixer.Sound('games/sumo/Sumo_game_Boowakabanga.wav')
+    cowabanga_sound = pygame.mixer.Sound('games/sumo/Sumo_game_Cowabanga.wav')
 
 
     def display_everything():
@@ -36,7 +42,6 @@ def sumo():
         screen.blit(player2_score, player2_score_rect)
 
     def display_explosion(bot):
-        global dt
         bot.rotate(1)
         w = r1.image.get_rect().width
         if i % 3 == 0:
@@ -49,11 +54,15 @@ def sumo():
         dt = clock.tick(su.FPS) / su.GENERAL_SPEED
         sleep(0.1)
 
-
+    def game_over():
+        screen.blit(win, (26, 200))
+        pygame.display.update()
+        sleep(2)
     class bot():
         def __init__(self, img_file, x, y, rot):
             # Load the image with alpha transparency.
-            self.image0 = pygame.image.load(su.pathto(img_file)).convert_alpha()
+            self.image0 = pygame.image.load(img_file).convert_alpha()
+            self.image0 = pygame.transform.scale(self.image0, (100, 100))
             # Create a copy of the image to be rotated.
             self.image = self.image0.copy()
             # Save initial parameters.
@@ -104,6 +113,11 @@ def sumo():
             self.corner = (self.x - su.BOT_OFFSET, self.y - su.BOT_OFFSET)
 
         def impact(self, opponent):
+            # Play sound effect based on bot color
+            if self.image0 == r1.image0:
+                boowakabanga_sound.play()
+            #elif self.image0 == r2.image0:
+            # cowabanga_sound.play()
             return su.calculate_impact(self.rot, self.center, opponent.center)
         
         def move_back(self, impact_factor, angle):
@@ -140,16 +154,14 @@ def sumo():
 
     # Create the bots.
     r1 = bot(su.RED, su.WIDTH * 1 / 4, su.HEIGHT / 2, 0)
-    r2 = bot(su.BLUE, su.WIDTH * 3 / 4, su.HEIGHT / 2, 0)
+    r2 = bot(su.BLUE, su.WIDTH * 3 / 4, su.HEIGHT / 2, 180)
 
-    while True:
+    running = True
+    while running:
         # poll for events, pygame.QUIT event means the user clicked X to close your window
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return False
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
-                    return False
 
         # Draw everything
         display_everything()
@@ -173,14 +185,14 @@ def sumo():
             r2.rotate(1)
         if keys[pygame.K_RIGHT]:
             r2.rotate(-1)
-        # if keys[pygame.K_ESCAPE]:
-        #     r1.reset()
-        #     r2.reset()
-        #     r1.score = 0
-        #     r2.score = 0
+        if keys[pygame.K_ESCAPE]:
+            r1.reset()
+            r2.reset()
+            r1.score = 0
+            r2.score = 0
 
         # Check for collision between bots. If there is a collision, move the bots back.
-        if su.collision(r1.center, r2.center):
+        if su.collition(r1.center, r2.center):
             impact_factor_r1_on_r2 = r1.impact(r2)
             impact_factor_r2_on_r1 = r2.impact(r1)
             angle_r1_r2 = su.calculate_angle(r1.center, r2.center)
@@ -208,14 +220,13 @@ def sumo():
                 r2.reset()
                 r1.score += 1
 
+        if r1.score == 2 or r2.score == 2:
+            game_over()
+            return False
         # flip() the display to put your work on screen
         pygame.display.flip()
 
         # dt is delta time in seconds since last frame, used for framerate-independent physics.
         dt = clock.tick(su.FPS) / su.GENERAL_SPEED
-        
-        # temp win and lose conditions
-        if r1.score == 3:
-            return True
-        elif r2.score == 3:
-            return False
+
+    pygame.quit()
